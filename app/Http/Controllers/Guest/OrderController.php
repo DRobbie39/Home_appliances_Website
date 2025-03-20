@@ -4,13 +4,8 @@ namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\OrderRequest;
-use App\Models\Cart;
-use App\Models\Notification;
-use App\Services\Guest\Cart\CartService;
 use App\Services\Guest\Order\OrderService;
-use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 
 class OrderController extends Controller
 {
@@ -24,12 +19,12 @@ class OrderController extends Controller
     public function index()
     {
         $listOrder = $this->orderService->getOrders();
+
         return view('guest.order.index', ['listOrder' => $listOrder]);
     }
 
     public function create(OrderRequest $request)
     {
-
         $response = $this->orderService->create($request);
         if ($response['success']) {
             return redirect()->route('guest.account.index')->with('success', 'Thanh toán thành công');

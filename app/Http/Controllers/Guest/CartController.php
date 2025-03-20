@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers\Guest;
 
-use Carbon\Carbon;
-use App\Models\Customer;
-use App\Models\Discount;
 use App\Enums\PriceShipEnum;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Brian2694\Toastr\Facades\Toastr;
-use Illuminate\Support\Facades\Auth;
 use App\Services\Guest\Cart\CartService;
-use App\Services\Guest\Home\HomeService;
 use App\Services\Guest\Account\AccountService;
-use App\Services\Guest\Contact\ContactService;
 
 class CartController extends Controller
 {
@@ -24,13 +17,15 @@ class CartController extends Controller
         $this->cartService = $cartService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         if (!auth()->check()) {
             return redirect()->route('login');
         }
+
         $data = $this->cartService->getDataCart();
         $data = ['listCart' => $data] + ['totalPrice' => $this->cartService->totalPrice()];
+
         return view('guest.cart.index', $data);
     }
 
@@ -46,8 +41,9 @@ class CartController extends Controller
                 ], 404);
             }
         }
+
         return response()->json([
-            'message' => 'Thiếu dữ liệu cần thiết hoặc số lương không hợp lệ'
+            'message' => 'Thiếu dữ liệu cần thiết hoặc số lượng không hợp lệ'
         ], 404);
     }
 
@@ -74,6 +70,7 @@ class CartController extends Controller
                 'message' => 'Thất bại 11'
             ], 404);
         }
+
         $response = $this->cartService->update($request->quantity, $request->id);
         if ($response['success']) {
             return $response['data'];
@@ -86,18 +83,20 @@ class CartController extends Controller
 
     public function checkOut(Request $request, AccountService $account)
     {
-        // dd(!auth()->check()||auth()->guard('admin')->check());
         if (!auth()->check()) {
             return redirect()->route('guest.shop');
         }
+
         if ($this->cartService->totalPrice() <= 0 || $this->cartService->totalQuantity() <= 0) {
             return redirect()->route('guest.shop');
         }
+
         $infoCustomer = $account->findCustomer(auth()->user()->id);
         $data = $this->cartService->getDataCart();
         $response = $this->cartService->getDiscount($request->discountCode);
         $data = ['listCart' => $data] + $response['data'] + ['infoCustomer' => $infoCustomer]
             + ['totalPrice' => $this->cartService->totalPrice(), 'ship' => PriceShipEnum::URBAN];
+
         return view('guest.cart.check_out', $data);
     }
 

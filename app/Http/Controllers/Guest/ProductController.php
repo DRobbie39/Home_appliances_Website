@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Notification;
-use App\Models\Product;
 use App\Models\ProductColor;
-use App\Models\ProductSize;
 use App\Services\Guest\Product\ProductService;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
@@ -34,7 +32,6 @@ class ProductController extends Controller
 
     public function listProduct(Request $request)
     {
-
         return  $this->productService->getListProduct($request);
     }
 
@@ -48,6 +45,7 @@ class ProductController extends Controller
             return App::abort(404, 'Record not found.');
         }
     }
+    
     public function quantityProductColor(Request $request)
     {
         $productColor = ProductColor::find($request->id);

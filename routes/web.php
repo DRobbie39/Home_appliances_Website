@@ -1,21 +1,9 @@
 <?php
 
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Product;
-use App\Jobs\SendOrderMail;
-use App\Models\OrderDetail;
-use App\Models\ProductSize;
 use Illuminate\Http\Request;
-use App\Exports\CustomerExport;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
-use App\Services\Guest\Cart\CartService;
-use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Guest\CartController;
 use App\Http\Controllers\Guest\HomeController;
 use App\Http\Controllers\Admin\BrandController;
@@ -50,13 +38,9 @@ use App\Http\Controllers\Guest\ProductController as GuestProductController;
 |
 */
 
-
-
 Auth::routes();
 
-
-
-
+//================ADMIN=========================//
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin'], function () {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/sign-in', [AuthController::class, 'signIn'])->name('sign_in');
@@ -113,7 +97,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin'], fu
             Route::get('/', [MailboxController::class, 'index'])->name('index');
         });
 
-
         Route::group(['prefix' => 'category', 'as' => 'category.', 'namespace' => 'Category'], function () {
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::get('create', [CategoryController::class, 'create'])->name('create');
@@ -168,6 +151,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin'], fu
         });
     });
 });
+
 //================GUEST=========================//
 Route::group(['as' => 'guest.', 'namespace' => 'Guest'], function () {
     Route::get('/', [HomeController::class, 'index'])->name('index');
@@ -222,21 +206,14 @@ Route::group(['as' => 'guest.', 'namespace' => 'Guest'], function () {
     });
 });
 
-
-
-
-
-
 Route::fallback(function () {
     return view('errors.404');
 })->name('error');
-// Route::get('/test', function () {
-//     return view('test');
-// });
+
 Route::get('/test1', function (Request $request) {
     $request->session()->put('cart', ['dadfas' => 123, 'jhfjasd' => 'khan asdfasddeptai']);
 });
+
 Route::get('/test', function (Request $request) {
-    // $request->session()->forget('cart');
     dd($request->session()->pull('cart'));
 })->name('test');
